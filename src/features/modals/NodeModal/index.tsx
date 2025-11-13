@@ -63,7 +63,14 @@ export const NodeModal = ({ opened, onClose }: ModalProps) => {
         }
       }
       const last = path[path.length - 1];
-      parent[last as any] = value;
+      // If existing value is an object and new value is an object, merge shallowly
+      const existing = parent[last as any];
+      const isObj = (v: any) => v && typeof v === "object" && !Array.isArray(v);
+      if (isObj(existing) && isObj(value)) {
+        parent[last as any] = { ...existing, ...value };
+      } else {
+        parent[last as any] = value;
+      }
     };
 
     setAtPath(root, nodeData.path as any[], parsed);
